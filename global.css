@@ -21,6 +21,36 @@ body {
   display: flex;
   flex-direction: column;
   padding-bottom: calc(var(--touch-target) * 2 + var(--space-md)); /* Space for bottom nav */
+  position: relative;
+  z-index: 0;
+  overflow-x: hidden;
+}
+
+/* WOW Effect: Animated glowing orbs in the background */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  width: 40vw;
+  height: 40vw;
+  min-width: 250px;
+  min-height: 250px;
+  border-radius: 50%;
+  z-index: -1;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: float-orb 15s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+body::before {
+  background: var(--color-azzurro);
+  top: -5%;
+  left: -10%;
+}
+body::after {
+  background: var(--color-rosso);
+  bottom: 5%;
+  right: -10%;
+  animation-delay: -5s;
 }
 
 h1, h2, h3, h4 {

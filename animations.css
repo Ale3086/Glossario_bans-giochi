@@ -38,3 +38,14 @@
   70% { box-shadow: 0 0 0 10px rgba(47, 143, 199, 0); }
   100% { box-shadow: 0 0 0 0 rgba(47, 143, 199, 0); }
 }
+
+@keyframes float-orb {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, 30px) scale(1.1); }
+  100% { transform: translate(-30px, 60px) scale(0.9); }
+}
+
+@keyframes bounce-logo {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}

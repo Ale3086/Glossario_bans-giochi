@@ -35,9 +35,15 @@
     }
     
     .hero h1 {
-      color: var(--color-rosso);
       text-transform: uppercase;
       letter-spacing: -1px;
+    }
+    
+    .text-gradient {
+      background: linear-gradient(135deg, var(--color-rosso), var(--color-azzurro));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0px 8px 16px rgba(47, 143, 199, 0.2);
     }
     
     .logo-placeholder {
@@ -51,6 +57,11 @@
       font-size: 3rem;
       box-shadow: 0 0 0 10px rgba(255,201,60,0.3);
       margin-bottom: var(--space-md);
+    }
+    
+    .animated-logo {
+      animation: bounce-logo 3.5s ease-in-out infinite;
+      box-shadow: 0 10px 30px rgba(255,201,60,0.5), inset 0 0 15px rgba(232, 68, 45, 0.2);
     }
     
     .main-actions {
@@ -80,8 +91,8 @@
 
   <main class="hero">
     <div>
-      <div class="logo-placeholder">⛺</div>
-      <h1>Giochi<br>& Bans</h1>
+      <div class="logo-placeholder animated-logo">⛺</div>
+      <h1 class="text-gradient">Giochi<br>& Bans</h1>
     </div>
     
     <div class="main-actions">
