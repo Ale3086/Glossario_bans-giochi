@@ -1,19 +1,19 @@
 const CACHE_NAME = 'giochi-bans-v1';
 
 const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/giochi.html',
-  '/bans.html',
-  '/admin.html',
-  '/tokens.css',
-  '/global.css',
-  '/components.css',
-  '/animations.css',
-  '/app.js',
-  '/db.js',
-  '/search.js',
-  '/manifest.json'
+  './',
+  'index.html',
+  'giochi.html',
+  'bans.html',
+  'admin.html',
+  'tokens.css',
+  'global.css',
+  'components.css',
+  'animations.css',
+  'app.js',
+  'db.js',
+  'search.js',
+  'manifest.json'
 ];
 
 // Install Event
