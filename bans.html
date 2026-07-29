@@ -63,27 +63,33 @@
         return;
       }
 
-      resultsContainer.innerHTML = filtered.map(ban => `
-        <div class="card" onclick="this.classList.toggle('expanded')">
-          <div class="card-title">${highlightMatch(ban.nome, query)}
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#6C7A89"><path d="M7 10l5 5 5-5z"/></svg>
+      resultsContainer.innerHTML = '';
+      filtered.forEach(ban => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        const testo = (ban.testo || '').trim();
+        const note = (ban.note_gesti || '').trim();
+        const link = (ban.link_video || '').trim();
+
+        let bodyHtml = '';
+        if (testo) bodyHtml += `<p><strong>Testo:</strong><br>${highlightMatch(testo, query)}</p>`;
+        if (note) bodyHtml += `<p><strong>Note:</strong><br>${highlightMatch(note, query)}</p>`;
+        if (link) bodyHtml += `<a href="${link}" target="_blank" class="btn btn-secondary" style="margin-top:var(--space-sm); display:inline-block; font-size:var(--font-size-xs); padding:4px 12px">Guarda Video</a>`;
+
+        card.innerHTML = `
+          <div class="card-header">
+            <h3 class="card-title">${highlightMatch(ban.nome, query)}</h3>
+            <span class="card-toggle">▼</span>
           </div>
-          <div class="card-preview">${ban.testo ? highlightMatch(ban.testo, query) : ''}</div>
-          <div class="card-content ban-text">
-            ${ban.testo ? highlightMatch(ban.testo, query) : ''}
-          </div>
-          ${ban.note_gesti ? `<div class="card-content" style="display:none; font-size:var(--font-size-sm); color:var(--color-text-muted); border-top:none; padding-top:0;"><em>Note: ${highlightMatch(ban.note_gesti, query)}</em></div>` : ''}
-        </div>
-      `).join('');
-      
-      // Fix for note_gesti displaying properly when expanded
-      document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', function() {
-            const notes = this.querySelector('.card-content:last-child');
-            if(notes && this.children.length > 3) { // It's the note div
-                notes.style.display = this.classList.contains('expanded') ? 'block' : 'none';
-            }
+          ${bodyHtml ? `<div class="card-content">${bodyHtml}</div>` : ''}
+        `;
+        
+        card.addEventListener('click', (e) => {
+          if (e.target.tagName.toLowerCase() === 'a') return;
+          card.classList.toggle('expanded');
         });
+        resultsContainer.appendChild(card);
       });
     }
 

@@ -63,18 +63,41 @@
         return;
       }
 
-      resultsContainer.innerHTML = filtered.map(gioco => `
-        <div class="card" onclick="this.classList.toggle('expanded')">
-          <div class="card-title">${highlightMatch(gioco.nome, query)}
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#6C7A89"><path d="M7 10l5 5 5-5z"/></svg>
+      resultsContainer.innerHTML = '';
+      filtered.forEach(gioco => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        const mat = (gioco.materiali || '').trim();
+        const tipo = (gioco.tipo || '').trim();
+        const gioc = (gioco.giocatori || '').trim();
+        const ob = (gioco.obiettivo || '').trim();
+        const reg = (gioco.regole || '').trim();
+
+        let metaHtml = '';
+        if (mat) metaHtml += `<span><strong>Materiali:</strong> ${highlightMatch(mat, query)}</span>`;
+        if (tipo) metaHtml += `<span><strong>Tipo:</strong> ${highlightMatch(tipo, query)}</span>`;
+        if (gioc) metaHtml += `<span><strong>Giocatori:</strong> ${highlightMatch(gioc, query)}</span>`;
+
+        let bodyHtml = '';
+        if (metaHtml) bodyHtml += `<div class="card-meta">${metaHtml}</div>`;
+        if (ob) bodyHtml += `<p><strong>Obiettivo:</strong> ${highlightMatch(ob, query)}</p>`;
+        if (reg) bodyHtml += `<p><strong>Regole:</strong><br>${highlightMatch(reg, query)}</p>`;
+
+        card.innerHTML = `
+          <div class="card-header">
+            <h3 class="card-title">${highlightMatch(gioco.nome, query)}</h3>
+            <span class="card-toggle">▼</span>
           </div>
-          <div class="card-preview">${gioco.regole ? highlightMatch(gioco.regole, query) : ''}</div>
-          <div class="card-content">
-            ${gioco.materiali ? `<strong>Materiali:</strong> ${highlightMatch(gioco.materiali, query)}<br><br>` : ''}
-            ${gioco.regole ? highlightMatch(gioco.regole, query) : ''}
-          </div>
-        </div>
-      `).join('');
+          ${bodyHtml ? `<div class="card-content">${bodyHtml}</div>` : ''}
+        `;
+        
+        // Espandi/comprimi
+        card.addEventListener('click', () => {
+          card.classList.toggle('expanded');
+        });
+        resultsContainer.appendChild(card);
+      });
     }
 
     const handleSearch = debounce((e) => {
