@@ -1,4 +1,4 @@
-const CACHE_NAME = 'giochi-bans-v1';
+const CACHE_NAME = 'giochi-bans-v2';
 
 const URLS_TO_CACHE = [
   './',
