@@ -225,9 +225,61 @@
 
 .highlight {
   background-color: rgba(255, 201, 60, 0.4);
-  font-weight: bold;
-  border-radius: 2px;
   padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* Card Actions (Print, Video) */
+.card-actions {
+  margin-top: var(--space-md);
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+  border-top: 1px dashed var(--color-border);
+  padding-top: var(--space-sm);
+}
+.btn.print-btn, .btn.video-btn {
+  padding: 4px 12px;
+  font-size: var(--font-size-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Print Styles */
+@media print {
+  .hero, .search-container, .bottom-nav, body::before, body::after {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    padding: 0 !important;
+  }
+  
+  .card-grid {
+    display: block !important;
+  }
+  
+  .card:not(.expanded) {
+    display: none !important;
+  }
+  
+  .card.expanded {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .card-toggle, .card-actions {
+    display: none !important;
+  }
+
+  * {
+    color: black !important;
+    text-shadow: none !important;
+  }
 }
 
 /* Empty State */

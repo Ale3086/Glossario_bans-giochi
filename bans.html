@@ -75,7 +75,17 @@
         let bodyHtml = '';
         if (testo) bodyHtml += `<p><strong>Testo:</strong><br>${highlightMatch(testo, query)}</p>`;
         if (note) bodyHtml += `<p><strong>Note:</strong><br>${highlightMatch(note, query)}</p>`;
-        if (link) bodyHtml += `<a href="${link}" target="_blank" class="btn btn-secondary" style="margin-top:var(--space-sm); display:inline-block; font-size:var(--font-size-xs); padding:4px 12px">Guarda Video</a>`;
+        
+        let actionsHtml = '';
+        if (link) actionsHtml += `<a href="${link}" target="_blank" class="btn btn-secondary video-btn" onclick="event.stopPropagation()">Guarda Video</a>`;
+        actionsHtml += `
+          <button class="btn btn-outline print-btn" onclick="event.stopPropagation(); window.print()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+            Stampa
+          </button>
+        `;
+        
+        bodyHtml += `<div class="card-actions">${actionsHtml}</div>`;
 
         card.innerHTML = `
           <div class="card-header">
