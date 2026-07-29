@@ -250,7 +250,7 @@
 
 /* Print Styles */
 @media print {
-  .hero, .search-container, .bottom-nav, body::before, body::after {
+  .hero, .search-container, .bottom-nav, body::before, body::after, #multiPrintAction {
     display: none !important;
   }
   
@@ -263,18 +263,35 @@
     display: block !important;
   }
   
-  .card:not(.expanded) {
+  /* SINGLE PRINT MODE */
+  body:not(.printing-multiple) .card:not(.expanded) {
     display: none !important;
   }
-  
-  .card.expanded {
+  body:not(.printing-multiple) .card.expanded {
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
     margin: 0 !important;
   }
   
-  .card-toggle, .card-actions {
+  /* MULTIPLE PRINT MODE */
+  body.printing-multiple .card:not(.selected) {
+    display: none !important;
+  }
+  body.printing-multiple .card.selected {
+    display: block !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 0 var(--space-md) 0 !important;
+    margin: 0 0 var(--space-md) 0 !important;
+    border-bottom: 1px solid #ccc !important;
+    page-break-inside: avoid;
+  }
+  body.printing-multiple .card.selected .card-content {
+    display: block !important; /* Force expand content for printing */
+  }
+  
+  .card-toggle, .card-actions, .card-checkbox {
     display: none !important;
   }
 
@@ -282,6 +299,23 @@
     color: black !important;
     text-shadow: none !important;
   }
+}
+
+/* Selection Mode */
+body.selection-mode .card-checkbox {
+  display: block !important;
+}
+body.selection-mode .card-toggle {
+  display: none !important;
+}
+body.selection-mode .card {
+  cursor: pointer !important;
+  transition: all 0.2s;
+}
+body.selection-mode .card.selected {
+  border-color: var(--color-rosso);
+  box-shadow: 0 0 0 2px var(--color-rosso), var(--shadow-md);
+  background: rgba(232, 68, 45, 0.05);
 }
 
 /* Empty State */

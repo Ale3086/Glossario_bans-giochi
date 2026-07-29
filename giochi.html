@@ -18,13 +18,24 @@
     <h1>Giochi</h1>
     
     <div class="search-container">
-      <input type="text" id="searchInput" class="search-input" placeholder="Cerca giochi..." autocomplete="off">
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="searchInput" class="search-input" placeholder="Cerca giochi..." autocomplete="off">
+        <button id="startMultiPrint" class="btn btn-secondary" style="padding:0 15px;" title="Stampa Multipla">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+        </button>
+      </div>
     </div>
     
     <div id="results" class="card-grid">
       <!-- Loading or Results will appear here -->
     </div>
   </main>
+  
+  <div id="multiPrintAction" style="display:none; position:fixed; bottom: 80px; left:50%; transform:translateX(-50%); z-index:200; background:var(--color-card-bg); padding:10px 20px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,0.3); align-items:center; gap:10px; border:1px solid var(--color-border); white-space:nowrap;">
+    <span id="printCount" style="font-weight:bold; font-size:var(--font-size-sm);">0 selezionati</span>
+    <button class="btn btn-primary" id="doMultiPrint" style="padding:6px 16px; font-size:var(--font-size-sm);">Stampa</button>
+    <button class="btn btn-outline" id="cancelMultiPrint" style="padding:6px 16px; font-size:var(--font-size-sm);">Annulla</button>
+  </div>
   
   <nav class="bottom-nav">
     <a href="index.html" class="nav-item">
@@ -79,35 +90,53 @@
         if (tipo) metaHtml += `<span><strong>Tipo:</strong> ${highlightMatch(tipo, query)}</span>`;
         if (gioc) metaHtml += `<span><strong>Giocatori:</strong> ${highlightMatch(gioc, query)}</span>`;
 
+        const hasContent = metaHtml !== '' || ob !== '' || reg !== '';
+
         let bodyHtml = '';
-        if (metaHtml) bodyHtml += `<div class="card-meta">${metaHtml}</div>`;
-        if (ob) bodyHtml += `<p><strong>Obiettivo:</strong> ${highlightMatch(ob, query)}</p>`;
-        if (reg) bodyHtml += `<p><strong>Regole:</strong><br>${highlightMatch(reg, query)}</p>`;
-        
-        bodyHtml += `
-          <div class="card-actions">
-            <button class="btn btn-outline print-btn" onclick="event.stopPropagation(); window.print()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
-              Stampa
-            </button>
-          </div>
-        `;
+        if (hasContent) {
+          if (metaHtml) bodyHtml += `<div class="card-meta">${metaHtml}</div>`;
+          if (ob) bodyHtml += `<p><strong>Obiettivo:</strong> ${highlightMatch(ob, query)}</p>`;
+          if (reg) bodyHtml += `<p><strong>Regole:</strong><br>${highlightMatch(reg, query)}</p>`;
+          
+          bodyHtml += `
+            <div class="card-actions">
+              <button class="btn btn-outline print-btn" onclick="event.stopPropagation(); window.print()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+                Stampa
+              </button>
+            </div>
+          `;
+        }
 
         card.innerHTML = `
           <div class="card-header">
-            <h3 class="card-title">${highlightMatch(gioco.nome, query)}</h3>
-            ${bodyHtml ? '<span class="card-toggle">▼</span>' : ''}
+            <div style="display:flex; align-items:center; gap:10px;">
+              <input type="checkbox" class="card-checkbox" style="display:none; transform:scale(1.3); pointer-events:none; margin:0;">
+              <h3 class="card-title">${highlightMatch(gioco.nome, query)}</h3>
+            </div>
+            ${hasContent ? '<span class="card-toggle">▼</span>' : ''}
           </div>
-          ${bodyHtml ? `<div class="card-content">${bodyHtml}</div>` : ''}
+          ${hasContent ? `<div class="card-content">${bodyHtml}</div>` : ''}
         `;
         
-        if (bodyHtml) {
-          card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+          if (document.body.classList.contains('selection-mode')) {
+             card.classList.toggle('selected');
+             const cb = card.querySelector('.card-checkbox');
+             if (cb) cb.checked = card.classList.contains('selected');
+             updatePrintCount();
+             return;
+          }
+          if (hasContent) {
+            if (e.target.closest('.card-actions')) return;
             card.classList.toggle('expanded');
-          });
-        } else {
+          }
+        });
+        
+        if (!hasContent) {
           card.style.cursor = 'default';
         }
+        
         resultsContainer.appendChild(card);
       });
     }
@@ -119,6 +148,40 @@
     }, 200);
 
     searchInput.addEventListener('input', handleSearch);
+
+    // Multi-print Logic
+    const multiPrintBtn = document.getElementById('startMultiPrint');
+    const multiPrintAction = document.getElementById('multiPrintAction');
+    const printCount = document.getElementById('printCount');
+    const cancelMultiPrint = document.getElementById('cancelMultiPrint');
+    const doMultiPrint = document.getElementById('doMultiPrint');
+
+    multiPrintBtn.addEventListener('click', () => {
+      document.body.classList.add('selection-mode');
+      multiPrintAction.style.display = 'flex';
+      updatePrintCount();
+    });
+
+    cancelMultiPrint.addEventListener('click', () => {
+      document.body.classList.remove('selection-mode');
+      multiPrintAction.style.display = 'none';
+      document.querySelectorAll('.card.selected').forEach(c => {
+        c.classList.remove('selected');
+        c.querySelector('.card-checkbox').checked = false;
+      });
+    });
+
+    doMultiPrint.addEventListener('click', () => {
+      if (document.querySelectorAll('.card.selected').length === 0) return;
+      document.body.classList.add('printing-multiple');
+      window.print();
+      setTimeout(() => document.body.classList.remove('printing-multiple'), 500);
+    });
+
+    function updatePrintCount() {
+      const count = document.querySelectorAll('.card.selected').length;
+      printCount.textContent = count + ' selezionati';
+    }
 
     async function init() {
       resultsContainer.innerHTML = '<div class="empty-state">Caricamento...</div>';
