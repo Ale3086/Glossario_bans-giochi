@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Giochi & Bans</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2F8FC7">
+  
+  <!-- iOS Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/global.css">
+  <link rel="stylesheet" href="/components.css">
+  <link rel="stylesheet" href="/animations.css">
+  
+  <style>
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+      gap: var(--space-xl);
+      background-image: var(--glow-giallo), var(--glow-azzurro);
+      background-position: top -50px left -50px, bottom -50px right -50px;
+      background-repeat: no-repeat;
+    }
+    
+    .hero h1 {
+      color: var(--color-rosso);
+      text-transform: uppercase;
+      letter-spacing: -1px;
+    }
+    
+    .logo-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--color-giallo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: 0 0 0 10px rgba(255,201,60,0.3);
+      margin-bottom: var(--space-md);
+    }
+    
+    .main-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      width: 100%;
+      max-width: 300px;
+    }
+    
+    .main-actions .btn {
+      width: 100%;
+      height: 60px;
+      font-size: var(--font-size-h3);
+    }
+    
+    .admin-link {
+      margin-top: auto;
+      text-align: center;
+      padding: var(--space-md);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+  </style>
+</head>
+<body>
+
+  <main class="hero">
+    <div>
+      <div class="logo-placeholder">⛺</div>
+      <h1>Giochi<br>& Bans</h1>
+    </div>
+    
+    <div class="main-actions">
+      <a href="/giochi.html" class="btn btn-primary">GIOCHI</a>
+      <a href="/bans.html" class="btn btn-secondary">BANS</a>
+    </div>
+  </main>
+  
+  <footer class="admin-link">
+    <a href="/admin.html">Accesso Admin</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

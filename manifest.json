@@ -1,0 +1,27 @@
+{
+  "name": "Giochi & Bans Scout",
+  "short_name": "Giochi&Bans",
+  "description": "Archivio di giochi e bans per attività scout.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#FAF6EC",
+  "theme_color": "#2F8FC7",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

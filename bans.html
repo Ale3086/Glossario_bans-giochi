@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bans - Giochi & Bans</title>
+  
+  <meta name="theme-color" content="#2F8FC7">
+  
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/global.css">
+  <link rel="stylesheet" href="/components.css">
+  <link rel="stylesheet" href="/animations.css">
+</head>
+<body>
+
+  <main>
+    <h1>Bans</h1>
+    
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-input" placeholder="Cerca bans..." autocomplete="off">
+    </div>
+    
+    <div id="results" class="card-grid">
+      <!-- Loading or Results will appear here -->
+    </div>
+  </main>
+  
+  <nav class="bottom-nav">
+    <a href="/index.html" class="nav-item">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Home
+    </a>
+    <a href="/giochi.html" class="nav-item">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      Giochi
+    </a>
+    <a href="/bans.html" class="nav-item active">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      Bans
+    </a>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/app.js"></script>
+  <script type="module">
+    import { syncData, subscribeToChanges } from '/db.js';
+    import { performSearch, highlightMatch, debounce } from '/search.js';
+
+    let allBans = [];
+    const searchInput = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('results');
+
+    // Restore search state
+    const savedSearch = sessionStorage.getItem('search_bans') || '';
+    if (savedSearch) searchInput.value = savedSearch;
+
+    function renderResults(query) {
+      const filtered = performSearch(query, allBans, ['nome', 'testo', 'note_gesti']);
+      
+      if (filtered.length === 0) {
+        resultsContainer.innerHTML = `<div class="empty-state">Nessun risultato per "${query}"</div>`;
+        return;
+      }
+
+      resultsContainer.innerHTML = filtered.map(ban => `
+        <div class="card" onclick="this.classList.toggle('expanded')">
+          <div class="card-title">${highlightMatch(ban.nome, query)}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#6C7A89"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="card-preview">${ban.testo ? highlightMatch(ban.testo, query) : ''}</div>
+          <div class="card-content ban-text">
+            ${ban.testo ? highlightMatch(ban.testo, query) : ''}
+          </div>
+          ${ban.note_gesti ? `<div class="card-content" style="display:none; font-size:var(--font-size-sm); color:var(--color-text-muted); border-top:none; padding-top:0;"><em>Note: ${highlightMatch(ban.note_gesti, query)}</em></div>` : ''}
+        </div>
+      `).join('');
+      
+      // Fix for note_gesti displaying properly when expanded
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', function() {
+            const notes = this.querySelector('.card-content:last-child');
+            if(notes && this.children.length > 3) { // It's the note div
+                notes.style.display = this.classList.contains('expanded') ? 'block' : 'none';
+            }
+        });
+      });
+    }
+
+    const handleSearch = debounce((e) => {
+      const q = e.target.value;
+      sessionStorage.setItem('search_bans', q);
+      renderResults(q);
+    }, 200);
+
+    searchInput.addEventListener('input', handleSearch);
+
+    async function init() {
+      resultsContainer.innerHTML = '<div class="empty-state">Caricamento...</div>';
+      allBans = await syncData('bans');
+      renderResults(searchInput.value);
+
+      subscribeToChanges('bans', (newData) => {
+        allBans = newData;
+        renderResults(searchInput.value);
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

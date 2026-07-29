@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Admin - Giochi & Bans</title>
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/global.css">
+  <link rel="stylesheet" href="/components.css">
+  <link rel="stylesheet" href="/animations.css">
+  <style>
+    .admin-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-sm);
+    }
+    .form-group label {
+      font-weight: 600;
+      font-size: var(--font-size-sm);
+    }
+    .form-control {
+      padding: var(--space-sm);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: var(--font-size-base);
+    }
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .admin-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .admin-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm);
+      background: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+    }
+    .admin-item-actions {
+      display: flex;
+      gap: var(--space-xs);
+    }
+    .hidden { display: none !important; }
+    
+    .tab-container {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: var(--space-sm);
+      background: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--color-azzurro);
+      color: white;
+      border-color: var(--color-azzurro);
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <h1>Admin Panel</h1>
+    
+    <div id="loginSection" class="admin-container">
+      <div class="card">
+        <h3>Login</h3>
+        <div class="form-group" style="margin-top:var(--space-md)">
+          <label>Email</label>
+          <input type="email" id="emailInput" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="passwordInput" class="form-control">
+        </div>
+        <button id="loginBtn" class="btn btn-primary" style="width:100%">Accedi</button>
+        <div id="loginError" style="color:var(--color-rosso); margin-top:var(--space-sm)"></div>
+      </div>
+    </div>
+
+    <div id="dashboardSection" class="admin-container hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button id="logoutBtn" class="btn btn-outline" style="font-size:var(--font-size-sm)">Logout</button>
+        <button id="backupBtn" class="btn btn-secondary" style="font-size:var(--font-size-sm)">Scarica Backup JSON</button>
+      </div>
+
+      <div class="tab-container">
+        <div class="tab active" data-tab="giochi">Gestisci Giochi</div>
+        <div class="tab" data-tab="bans">Gestisci Bans</div>
+      </div>
+      
+      <button id="addNewBtn" class="btn btn-primary" style="width:100%; margin-bottom:var(--space-md)">+ Aggiungi Nuovo</button>
+
+      <div class="search-container">
+        <input type="text" id="adminSearch" class="search-input" placeholder="Filtra lista...">
+      </div>
+
+      <div id="adminList" class="admin-list">
+        <!-- List populated via JS -->
+      </div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="/index.html" class="nav-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home</a>
+  </nav>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal">
+      <h3 id="modalTitle">Modifica</h3>
+      <div id="formFields" style="margin-top:var(--space-md); display:flex; flex-direction:column; gap:var(--space-sm)">
+        <!-- Injected fields -->
+      </div>
+      <div style="display:flex; gap:var(--space-sm); margin-top:var(--space-md)">
+        <button id="cancelEditBtn" class="btn btn-outline" style="flex:1">Annulla</button>
+        <button id="saveEditBtn" class="btn btn-primary" style="flex:1">Salva</button>
+      </div>
+      <div id="duplicateWarning" class="hidden" style="color:var(--color-rosso); font-size:var(--font-size-xs); margin-top:var(--space-xs)">
+        Attenzione: esiste già un elemento con un nome molto simile.
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal">
+      <h3>Conferma Eliminazione</h3>
+      <p style="margin:var(--space-md) 0">Sei sicuro di voler eliminare <strong id="deleteItemName"></strong>? L'azione è irreversibile.</p>
+      <div style="display:flex; gap:var(--space-sm)">
+        <button id="cancelDeleteBtn" class="btn btn-outline" style="flex:1">Annulla</button>
+        <button id="confirmDeleteBtn" class="btn btn-primary" style="flex:1; background-color:var(--color-rosso)">Elimina</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/app.js"></script>
+  <script type="module">
+    import { login, logout, getSession, adminUpsert, adminDelete, syncData } from '/db.js';
+    import { performSearch, normalizeText } from '/search.js';
+
+    let currentTab = 'giochi';
+    let data = { giochi: [], bans: [] };
+    let editingId = null;
+    let deletingId = null;
+
+    // Elements
+    const loginSec = document.getElementById('loginSection');
+    const dashSec = document.getElementById('dashboardSection');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const emailIn = document.getElementById('emailInput');
+    const passIn = document.getElementById('passwordInput');
+    const errOut = document.getElementById('loginError');
+    const adminList = document.getElementById('adminList');
+    const searchIn = document.getElementById('adminSearch');
+    const tabs = document.querySelectorAll('.tab');
+    
+    // Auth Check
+    async function checkAuth() {
+      const session = await getSession();
+      if (session) {
+        loginSec.classList.add('hidden');
+        dashSec.classList.remove('hidden');
+        await loadData();
+      } else {
+        loginSec.classList.remove('hidden');
+        dashSec.classList.add('hidden');
+      }
+    }
+    checkAuth();
+
+    loginBtn.addEventListener('click', async () => {
+      errOut.textContent = 'Accesso...';
+      const { error } = await login(emailIn.value, passIn.value);
+      if (error) errOut.textContent = error.message;
+      else checkAuth();
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await logout();
+      checkAuth();
+    });
+
+    // Data Management
+    async function loadData() {
+      data.giochi = await syncData('giochi');
+      data.bans = await syncData('bans');
+      renderList();
+    }
+
+    tabs.forEach(t => t.addEventListener('click', (e) => {
+      tabs.forEach(tab => tab.classList.remove('active'));
+      e.target.classList.add('active');
+      currentTab = e.target.dataset.tab;
+      renderList();
+    }));
+
+    searchIn.addEventListener('input', renderList);
+
+    function renderList() {
+      const query = searchIn.value;
+      const list = data[currentTab];
+      const filtered = query ? performSearch(query, list, ['nome']) : list;
+      
+      // Sort alphabetically by default for admin
+      filtered.sort((a,b) => a.nome.localeCompare(b.nome));
+
+      adminList.innerHTML = filtered.map(item => `
+        <div class="admin-item">
+          <strong>${item.nome}</strong>
+          <div class="admin-item-actions">
+            <button class="btn btn-outline" style="min-height:30px; padding:0 8px" onclick="editItem('${item.id}')">Modifica</button>
+            <button class="btn btn-primary" style="min-height:30px; padding:0 8px" onclick="promptDelete('${item.id}', \`${item.nome.replace(/`/g, "'")}\`)">Elimina</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Modal logic
+    window.editItem = (id) => {
+      editingId = id;
+      const item = id ? data[currentTab].find(x => x.id === id) : null;
+      document.getElementById('modalTitle').textContent = id ? 'Modifica' : 'Nuovo';
+      
+      let fieldsHTML = '';
+      if (currentTab === 'giochi') {
+        fieldsHTML = `
+          <div class="form-group"><label>Nome</label><input id="editNome" class="form-control" value="${item ? item.nome : ''}"></div>
+          <div class="form-group"><label>Regole</label><textarea id="editRegole" class="form-control">${item ? item.regole||'' : ''}</textarea></div>
+          <div class="form-group"><label>Materiali</label><input id="editMateriali" class="form-control" value="${item ? item.materiali||'' : ''}"></div>
+        `;
+      } else {
+        fieldsHTML = `
+          <div class="form-group"><label>Nome</label><input id="editNome" class="form-control" value="${item ? item.nome : ''}"></div>
+          <div class="form-group"><label>Testo</label><textarea id="editTesto" class="form-control">${item ? item.testo||'' : ''}</textarea></div>
+          <div class="form-group"><label>Note/Gesti</label><input id="editNote" class="form-control" value="${item ? item.note_gesti||'' : ''}"></div>
+        `;
+      }
+      document.getElementById('formFields').innerHTML = fieldsHTML;
+      document.getElementById('editModal').classList.add('active');
+      
+      // Duplicate warning logic
+      const nomeInput = document.getElementById('editNome');
+      const warning = document.getElementById('duplicateWarning');
+      nomeInput.addEventListener('input', (e) => {
+        const val = normalizeText(e.target.value);
+        if(val.length < 3) { warning.classList.add('hidden'); return; }
+        const exists = data[currentTab].some(x => x.id !== editingId && normalizeText(x.nome) === val);
+        if(exists) warning.classList.remove('hidden');
+        else warning.classList.add('hidden');
+      });
+    };
+
+    document.getElementById('addNewBtn').addEventListener('click', () => window.editItem(null));
+    document.getElementById('cancelEditBtn').addEventListener('click', () => document.getElementById('editModal').classList.remove('active'));
+
+    document.getElementById('saveEditBtn').addEventListener('click', async () => {
+      const record = {
+        nome: document.getElementById('editNome').value
+      };
+      if (editingId) record.id = editingId;
+      
+      if (currentTab === 'giochi') {
+        record.regole = document.getElementById('editRegole').value;
+        record.materiali = document.getElementById('editMateriali').value;
+      } else {
+        record.testo = document.getElementById('editTesto').value;
+        record.note_gesti = document.getElementById('editNote').value;
+      }
+
+      await adminUpsert(currentTab, record);
+      document.getElementById('editModal').classList.remove('active');
+      await loadData();
+    });
+
+    window.promptDelete = (id, nome) => {
+      deletingId = id;
+      document.getElementById('deleteItemName').textContent = nome;
+      document.getElementById('deleteModal').classList.add('active');
+    };
+
+    document.getElementById('cancelDeleteBtn').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('active'));
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+      if (deletingId) {
+        await adminDelete(currentTab, deletingId);
+        document.getElementById('deleteModal').classList.remove('active');
+        await loadData();
+      }
+    });
+
+    // Backup
+    document.getElementById('backupBtn').addEventListener('click', () => {
+      const backupData = JSON.stringify(data, null, 2);
+      const blob = new Blob([backupData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `backup_giochibans_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+  </script>
+</body>
+</html>
