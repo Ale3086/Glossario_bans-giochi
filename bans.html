@@ -90,15 +90,19 @@
         card.innerHTML = `
           <div class="card-header">
             <h3 class="card-title">${highlightMatch(ban.nome, query)}</h3>
-            <span class="card-toggle">▼</span>
+            ${bodyHtml ? '<span class="card-toggle">▼</span>' : ''}
           </div>
           ${bodyHtml ? `<div class="card-content">${bodyHtml}</div>` : ''}
         `;
         
-        card.addEventListener('click', (e) => {
-          if (e.target.tagName.toLowerCase() === 'a') return;
-          card.classList.toggle('expanded');
-        });
+        if (bodyHtml) {
+          card.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase() === 'a' || e.target.closest('button')) return;
+            card.classList.toggle('expanded');
+          });
+        } else {
+          card.style.cursor = 'default';
+        }
         resultsContainer.appendChild(card);
       });
     }

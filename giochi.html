@@ -96,15 +96,18 @@
         card.innerHTML = `
           <div class="card-header">
             <h3 class="card-title">${highlightMatch(gioco.nome, query)}</h3>
-            <span class="card-toggle">▼</span>
+            ${bodyHtml ? '<span class="card-toggle">▼</span>' : ''}
           </div>
           ${bodyHtml ? `<div class="card-content">${bodyHtml}</div>` : ''}
         `;
         
-        // Espandi/comprimi
-        card.addEventListener('click', () => {
-          card.classList.toggle('expanded');
-        });
+        if (bodyHtml) {
+          card.addEventListener('click', () => {
+            card.classList.toggle('expanded');
+          });
+        } else {
+          card.style.cursor = 'default';
+        }
         resultsContainer.appendChild(card);
       });
     }
