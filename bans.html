@@ -213,11 +213,24 @@
       }
       document.body.classList.remove('selection-mode');
       document.body.classList.add('printing-multiple');
-      window.print();
+      
       setTimeout(() => {
+          window.print();
+      }, 300);
+
+      const restoreState = () => {
           document.body.classList.remove('printing-multiple');
-          document.body.classList.add('selection-mode');
-      }, 500);
+          if (selectedIds.size > 0) {
+              document.body.classList.add('selection-mode');
+          }
+          window.removeEventListener('afterprint', restoreState);
+          window.removeEventListener('focus', restoreState);
+          window.removeEventListener('touchstart', restoreState);
+      };
+      
+      window.addEventListener('afterprint', restoreState);
+      window.addEventListener('focus', restoreState);
+      window.addEventListener('touchstart', restoreState);
     });
 
     function updatePrintCount() {
