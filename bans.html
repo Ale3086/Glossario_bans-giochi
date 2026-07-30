@@ -211,9 +211,13 @@
           sessionStorage.setItem('search_bans', '');
           renderResults('');
       }
+      document.body.classList.remove('selection-mode');
       document.body.classList.add('printing-multiple');
       window.print();
-      setTimeout(() => document.body.classList.remove('printing-multiple'), 500);
+      setTimeout(() => {
+          document.body.classList.remove('printing-multiple');
+          document.body.classList.add('selection-mode');
+      }, 500);
     });
 
     function updatePrintCount() {
