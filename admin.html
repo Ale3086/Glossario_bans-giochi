@@ -131,6 +131,7 @@
       <div id="formFields" style="margin-top:var(--space-md); display:flex; flex-direction:column; gap:var(--space-sm)">
         <!-- Injected fields -->
       </div>
+      <div id="formError" class="hidden" style="color:var(--color-rosso); font-size:var(--font-size-sm); margin-top:var(--space-sm)"></div>
       <div style="display:flex; gap:var(--space-sm); margin-top:var(--space-md)">
         <button id="cancelEditBtn" class="btn btn-outline" style="flex:1">Annulla</button>
         <button id="saveEditBtn" class="btn btn-primary" style="flex:1">Salva</button>
@@ -246,18 +247,20 @@
       let fieldsHTML = '';
       if (currentTab === 'giochi') {
         fieldsHTML = `
-          <div class="form-group"><label>Nome</label><input id="editNome" class="form-control" value="${item ? item.nome : ''}"></div>
+          <div class="form-group"><label>Nome *</label><input id="editNome" class="form-control" value="${item ? item.nome : ''}" placeholder="Obbligatorio"></div>
           <div class="form-group"><label>Regole</label><textarea id="editRegole" class="form-control">${item ? item.regole||'' : ''}</textarea></div>
           <div class="form-group"><label>Materiali</label><input id="editMateriali" class="form-control" value="${item ? item.materiali||'' : ''}"></div>
         `;
       } else {
         fieldsHTML = `
-          <div class="form-group"><label>Nome</label><input id="editNome" class="form-control" value="${item ? item.nome : ''}"></div>
-          <div class="form-group"><label>Testo</label><textarea id="editTesto" class="form-control">${item ? item.testo||'' : ''}</textarea></div>
+          <div class="form-group"><label>Nome *</label><input id="editNome" class="form-control" value="${item ? item.nome : ''}" placeholder="Obbligatorio"></div>
+          <div class="form-group"><label>Testo *</label><textarea id="editTesto" class="form-control" placeholder="Obbligatorio">${item ? item.testo||'' : ''}</textarea></div>
           <div class="form-group"><label>Note/Gesti</label><input id="editNote" class="form-control" value="${item ? item.note_gesti||'' : ''}"></div>
+          <div class="form-group"><label>Link Video YouTube</label><input id="editLink" class="form-control" value="${item ? item.link_video||'' : ''}" placeholder="https://youtu.be/..."></div>
         `;
       }
       document.getElementById('formFields').innerHTML = fieldsHTML;
+      document.getElementById('formError').classList.add('hidden');
       document.getElementById('editModal').classList.add('active');
       
       // Duplicate warning logic
@@ -276,17 +279,32 @@
     document.getElementById('cancelEditBtn').addEventListener('click', () => document.getElementById('editModal').classList.remove('active'));
 
     document.getElementById('saveEditBtn').addEventListener('click', async () => {
-      const record = {
-        nome: document.getElementById('editNome').value
-      };
+      const nomeVal = document.getElementById('editNome').value.trim();
+      const errDiv = document.getElementById('formError');
+      errDiv.classList.add('hidden');
+      
+      if (!nomeVal) {
+        errDiv.textContent = 'Errore: Il campo Nome è obbligatorio.';
+        errDiv.classList.remove('hidden');
+        return;
+      }
+
+      const record = { nome: nomeVal };
       if (editingId) record.id = editingId;
       
       if (currentTab === 'giochi') {
         record.regole = document.getElementById('editRegole').value;
         record.materiali = document.getElementById('editMateriali').value;
       } else {
-        record.testo = document.getElementById('editTesto').value;
+        const testoVal = document.getElementById('editTesto').value.trim();
+        if (!testoVal) {
+          errDiv.textContent = 'Errore: Il campo Testo è obbligatorio per i Bans.';
+          errDiv.classList.remove('hidden');
+          return;
+        }
+        record.testo = testoVal;
         record.note_gesti = document.getElementById('editNote').value;
+        record.link_video = document.getElementById('editLink').value;
       }
 
       await adminUpsert(currentTab, record);
