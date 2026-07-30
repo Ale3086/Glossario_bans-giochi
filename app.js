@@ -32,11 +32,32 @@ updateOnlineStatus();
 
 // PWA Install Prompt (Optional enhancement as requested)
 let deferredPrompt;
+const installBtn = document.getElementById('installAppBtn');
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  // Here we could show a custom banner "Aggiungi a Home"
+  if (installBtn) installBtn.style.display = 'inline-block';
   console.log("PWA install prompt ready.");
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      deferredPrompt = null;
+      installBtn.style.display = 'none';
+    } else {
+      alert("L'installazione diretta non è supportata dal tuo dispositivo/browser (es. su iPhone/Safari, usa il tasto 'Condividi' -> 'Aggiungi alla schermata Home').");
+    }
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  if (installBtn) installBtn.style.display = 'none';
+  console.log('PWA was installed');
 });
 
 // View Transitions Helper
