@@ -23,9 +23,10 @@
   
   <style>
     body {
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       margin: 0;
@@ -39,7 +40,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      gap: clamp(1rem, 4vh, var(--space-xl));
+      gap: clamp(10px, 3vh, 40px);
       min-height: 0;
     }
     
@@ -49,7 +50,7 @@
     }
     
     .hero h1 {
-      font-size: clamp(3.5rem, 10vw + 1rem, 5.5rem);
+      font-size: clamp(2.5rem, 8vh, 5.5rem);
       color: var(--color-azzurro);
       text-transform: uppercase;
       letter-spacing: -2px;
@@ -57,13 +58,13 @@
     }
     
     .main-logo {
-      width: clamp(120px, 35vw, 170px);
-      height: clamp(120px, 35vw, 170px);
+      width: clamp(100px, 20vh, 170px);
+      height: clamp(100px, 20vh, 170px);
       object-fit: contain;
-      margin-bottom: var(--space-md);
+      margin-bottom: clamp(5px, 2vh, var(--space-md));
       background: #ffffff;
-      padding: 15px;
-      border-radius: 30px;
+      padding: clamp(8px, 2vh, 15px);
+      border-radius: clamp(20px, 4vh, 30px);
       box-shadow: 0 15px 35px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(0,0,0,0.05);
     }
     
@@ -81,8 +82,8 @@
     
     .main-actions .btn {
       width: 100%;
-      height: 60px;
-      font-size: var(--font-size-h3);
+      height: clamp(50px, 8vh, 60px);
+      font-size: clamp(1.1rem, 3vh, var(--font-size-h3));
     }
     
     .admin-link {
