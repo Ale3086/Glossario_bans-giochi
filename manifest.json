@@ -1,6 +1,6 @@
 {
-  "name": "Giochi & Bans Scout",
-  "short_name": "Giochi&Bans",
+  "name": "Glossario_bans-giochi",
+  "short_name": "Glossario_bans-giochi",
   "description": "Archivio di giochi e bans per attività scout.",
   "start_url": "index.html",
   "display": "standalone",

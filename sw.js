@@ -1,4 +1,4 @@
-const CACHE_NAME = 'giochi-bans-v2';
+const CACHE_NAME = 'giochi-bans-v3';
 
 const URLS_TO_CACHE = [
   './',
@@ -13,7 +13,8 @@ const URLS_TO_CACHE = [
   'app.js',
   'db.js',
   'search.js',
-  'manifest.json'
+  'manifest.json',
+  'favicon.png'
 ];
 
 // Install Event

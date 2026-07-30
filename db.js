@@ -59,10 +59,13 @@ export async function saveLocalData(table, dataArray) {
 export async function syncData(table) {
   if (!navigator.onLine || !supabase) return await getLocalData(table);
   try {
-    const { data, error } = await supabase.from(table).select('*').order('nome');
-    if (error) throw error;
-    await saveLocalData(table, data);
-    return data;
+    const fetchPromise = supabase.from(table).select('*').order('nome');
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
+    
+    const result = await Promise.race([fetchPromise, timeoutPromise]);
+    if (result.error) throw result.error;
+    await saveLocalData(table, result.data);
+    return result.data;
   } catch (err) {
     console.error(`Sync error for ${table}:`, err);
     return await getLocalData(table);

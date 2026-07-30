@@ -30,9 +30,6 @@
       min-height: 70vh;
       text-align: center;
       gap: var(--space-xl);
-      background-image: var(--glow-giallo), var(--glow-azzurro);
-      background-position: top -50px left -50px, bottom -50px right -50px;
-      background-repeat: no-repeat;
     }
     
     .hero h1 {
@@ -48,22 +45,16 @@
       text-shadow: 0px 8px 16px rgba(47, 143, 199, 0.2);
     }
     
-    .logo-placeholder {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: var(--color-giallo);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      box-shadow: 0 0 0 10px rgba(255,201,60,0.3);
+    .main-logo {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
       margin-bottom: var(--space-md);
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
     }
     
     .animated-logo {
       animation: bounce-logo 3.5s ease-in-out infinite;
-      box-shadow: 0 10px 30px rgba(255,201,60,0.5), inset 0 0 15px rgba(232, 68, 45, 0.2);
     }
     
     .main-actions {
@@ -93,7 +84,7 @@
 
   <main class="hero">
     <div>
-      <div class="logo-placeholder animated-logo">⛺</div>
+      <img src="favicon.png" alt="Agesci Ponte San Giovanni 1" class="main-logo animated-logo">
       <h1>Giochi<br>& Bans</h1>
     </div>
     
