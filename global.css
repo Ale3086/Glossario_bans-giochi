@@ -86,28 +86,3 @@ main {
   outline-offset: 2px;
 }
 
-/* Print Styles */
-@media print {
-  body {
-    background-color: #FFF !important;
-    color: #000 !important;
-    padding: 0 !important;
-  }
-  .no-print, nav, .bottom-nav, .search-bar, button {
-    display: none !important;
-  }
-  .card-expand {
-    display: block !important;
-  }
-  .card {
-    box-shadow: none !important;
-    border: 1px solid #ccc !important;
-    page-break-inside: avoid;
-    page-break-after: always;
-    margin-bottom: 2rem;
-  }
-  .card-content, .card-rules {
-    font-size: 14pt !important;
-    color: #000 !important;
-  }
-}

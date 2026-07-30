@@ -248,76 +248,11 @@
   gap: 4px;
 }
 
-/* Print Styles */
-@media print {
-  .hero, .search-container, .bottom-nav, body::before, body::after, #multiPrintAction {
-    display: none !important;
-  }
-  
-  body {
-    background: white !important;
-    padding: 0 !important;
-  }
-  
-  .card-grid {
-    display: block !important;
-  }
-  
-  /* SINGLE PRINT MODE */
-  body:not(.printing-multiple) .card:not(.expanded) {
-    display: none !important;
-  }
-  body:not(.printing-multiple) .card.expanded {
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  
-  /* MULTIPLE PRINT MODE */
-  body.printing-multiple .card-grid {
-    gap: 0 !important;
-  }
-  body.printing-multiple .card:not(.selected) {
-    display: none !important;
-  }
-  body.printing-multiple .card.selected {
-    display: block !important;
-    box-shadow: none !important;
-    border: none !important;
-    border-bottom: 1px solid #000 !important;
-    padding: 10px 0 !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    page-break-inside: avoid;
-  }
-  body.printing-multiple .card.selected .card-content {
-    display: block !important; /* Force expand content for printing */
-    padding: 5px 0 10px 0 !important;
-    margin: 0 !important;
-    border-top: none !important;
-  }
-  body.printing-multiple .card.selected .card-header {
-    padding: 0 !important;
-  }
-  body.printing-multiple .card-title {
-    font-size: 14pt !important;
-    margin-bottom: 4px !important;
-  }
-  body.printing-multiple p, body.printing-multiple span {
-    font-size: 11pt !important;
-    line-height: 1.3 !important;
-  }
-  
-  .card-toggle, .card-actions, .card-checkbox {
-    display: none !important;
-  }
-
-  * {
-    color: black !important;
-    text-shadow: none !important;
-  }
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--color-text-muted);
 }
 
 /* Selection Mode */
@@ -335,13 +270,6 @@ body.selection-mode .card.selected {
   border-color: var(--color-rosso);
   box-shadow: 0 0 0 2px var(--color-rosso), var(--shadow-md);
   background: rgba(232, 68, 45, 0.05);
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: var(--space-xl) var(--space-md);
-  color: var(--color-text-muted);
 }
 
 /* Offline Banner */
@@ -394,4 +322,74 @@ body.selection-mode .card.selected {
 }
 .modal-overlay.active .modal {
   transform: scale(1);
+}
+
+/* Print Styles */
+@media print {
+  .hero, .search-container, .bottom-nav, body::before, body::after, #multiPrintAction {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    padding: 0 !important;
+  }
+  
+  /* SINGLE PRINT MODE */
+  body:not(.printing-multiple) .card:not(.expanded) {
+    display: none !important;
+  }
+  body:not(.printing-multiple) .card.expanded {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* MULTIPLE PRINT MODE */
+  body.printing-multiple .card-grid {
+    gap: 0 !important;
+    display: block !important;
+  }
+  body.printing-multiple .card:not(.selected) {
+    display: none !important;
+  }
+  body.printing-multiple .card.selected {
+    display: block !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-bottom: 1px solid #000 !important;
+    padding: 10px 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    page-break-inside: avoid;
+    page-break-after: auto !important;
+  }
+  body.printing-multiple .card.selected .card-content {
+    display: block !important; /* Force expand content for printing */
+    padding: 5px 0 10px 0 !important;
+    margin: 0 !important;
+    border-top: none !important;
+  }
+  body.printing-multiple .card.selected .card-header {
+    padding: 0 !important;
+  }
+  body.printing-multiple .card-title {
+    font-size: 14pt !important;
+    margin-bottom: 4px !important;
+  }
+  body.printing-multiple p, body.printing-multiple span {
+    font-size: 11pt !important;
+    line-height: 1.3 !important;
+  }
+  
+  .card-toggle, .card-actions, .card-checkbox {
+    display: none !important;
+  }
+
+  * {
+    color: black !important;
+    text-shadow: none !important;
+  }
 }
