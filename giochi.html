@@ -22,10 +22,15 @@
       <div style="display:flex; gap:8px;">
         <input type="text" id="searchInput" class="search-input" placeholder="Cerca giochi..." autocomplete="off" style="flex:1;">
         <select id="sortSelect" class="form-control" style="width: auto; padding: 0 10px; font-size: var(--font-size-sm); border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-card-bg); color: var(--color-text);">
-          <option value="az">A-Z</option>
-          <option value="za">Z-A</option>
-          <option value="corti">Più corti</option>
-          <option value="lunghi">Più lunghi</option>
+          <option value="az">Nome (A-Z)</option>
+          <option value="za">Nome (Z-A)</option>
+          <option value="corti">Regole più corte</option>
+          <option value="lunghi">Regole più lunghe</option>
+          <option value="tipo_az">Tipo (A-Z)</option>
+          <option value="tipo_za">Tipo (Z-A)</option>
+          <option value="con_mat">Con Materiali</option>
+          <option value="senza_mat">Senza Materiali</option>
+          <option value="giocatori_az">Giocatori (A-Z)</option>
         </select>
         <button id="startMultiPrint" class="btn btn-secondary" style="padding:0 15px;" title="Stampa Multipla">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
@@ -83,17 +88,41 @@
       
       const sortVal = sortSelect.value;
       filtered.sort((a, b) => {
-         if (sortVal === 'az') return a.nome.localeCompare(b.nome);
-         if (sortVal === 'za') return b.nome.localeCompare(a.nome);
+         const nomeA = (a.nome || '').toLowerCase();
+         const nomeB = (b.nome || '').toLowerCase();
+         
+         if (sortVal === 'az') return nomeA.localeCompare(nomeB);
+         if (sortVal === 'za') return nomeB.localeCompare(nomeA);
          if (sortVal === 'corti') {
-           const lenA = (a.regole || '').length;
-           const lenB = (b.regole || '').length;
-           return lenA - lenB || a.nome.localeCompare(b.nome);
+           return (a.regole || '').length - (b.regole || '').length || nomeA.localeCompare(nomeB);
          }
          if (sortVal === 'lunghi') {
-           const lenA = (a.regole || '').length;
-           const lenB = (b.regole || '').length;
-           return lenB - lenA || a.nome.localeCompare(b.nome);
+           return (b.regole || '').length - (a.regole || '').length || nomeA.localeCompare(nomeB);
+         }
+         if (sortVal === 'tipo_az') {
+           const tA = (a.tipo || '').toLowerCase();
+           const tB = (b.tipo || '').toLowerCase();
+           return tA.localeCompare(tB) || nomeA.localeCompare(nomeB);
+         }
+         if (sortVal === 'tipo_za') {
+           const tA = (a.tipo || '').toLowerCase();
+           const tB = (b.tipo || '').toLowerCase();
+           return tB.localeCompare(tA) || nomeA.localeCompare(nomeB);
+         }
+         if (sortVal === 'con_mat') {
+           const mA = (a.materiali || '').trim().length > 0 ? 0 : 1;
+           const mB = (b.materiali || '').trim().length > 0 ? 0 : 1;
+           return mA - mB || nomeA.localeCompare(nomeB);
+         }
+         if (sortVal === 'senza_mat') {
+           const mA = (a.materiali || '').trim().length > 0 ? 1 : 0;
+           const mB = (b.materiali || '').trim().length > 0 ? 1 : 0;
+           return mA - mB || nomeA.localeCompare(nomeB);
+         }
+         if (sortVal === 'giocatori_az') {
+           const gA = (a.giocatori || '').toLowerCase();
+           const gB = (b.giocatori || '').toLowerCase();
+           return gA.localeCompare(gB) || nomeA.localeCompare(nomeB);
          }
          return 0;
       });
