@@ -275,6 +275,9 @@
   }
   
   /* MULTIPLE PRINT MODE */
+  body.printing-multiple .card-grid {
+    gap: 0 !important;
+  }
   body.printing-multiple .card:not(.selected) {
     display: none !important;
   }
@@ -282,13 +285,29 @@
     display: block !important;
     box-shadow: none !important;
     border: none !important;
-    padding: 0 0 var(--space-md) 0 !important;
-    margin: 0 0 var(--space-md) 0 !important;
-    border-bottom: 1px solid #ccc !important;
+    border-bottom: 1px solid #000 !important;
+    padding: 10px 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
     page-break-inside: avoid;
   }
   body.printing-multiple .card.selected .card-content {
     display: block !important; /* Force expand content for printing */
+    padding: 5px 0 10px 0 !important;
+    margin: 0 !important;
+    border-top: none !important;
+  }
+  body.printing-multiple .card.selected .card-header {
+    padding: 0 !important;
+  }
+  body.printing-multiple .card-title {
+    font-size: 14pt !important;
+    margin-bottom: 4px !important;
+  }
+  body.printing-multiple p, body.printing-multiple span {
+    font-size: 11pt !important;
+    line-height: 1.3 !important;
   }
   
   .card-toggle, .card-actions, .card-checkbox {

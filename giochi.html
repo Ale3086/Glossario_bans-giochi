@@ -63,6 +63,7 @@
     import { performSearch, highlightMatch, debounce } from './search.js';
 
     let allGiochi = [];
+    let selectedIds = new Set();
     const searchInput = document.getElementById('searchInput');
     const sortSelect = document.getElementById('sortSelect');
     const resultsContainer = document.getElementById('results');
@@ -93,6 +94,9 @@
       filtered.forEach(gioco => {
         const card = document.createElement('div');
         card.className = 'card';
+        
+        const isSelected = selectedIds.has(gioco.id);
+        if (isSelected) card.classList.add('selected');
         
         const mat = (gioco.materiali || '').trim();
         const tipo = (gioco.tipo || '').trim();
@@ -126,7 +130,7 @@
         card.innerHTML = `
           <div class="card-header">
             <div style="display:flex; align-items:center; gap:10px;">
-              <input type="checkbox" class="card-checkbox" style="display:none; transform:scale(1.3); pointer-events:none; margin:0;">
+              <input type="checkbox" class="card-checkbox" style="display:none; transform:scale(1.3); pointer-events:none; margin:0;" ${isSelected ? 'checked' : ''}>
               <h3 class="card-title">${highlightMatch(gioco.nome, query)}</h3>
             </div>
             ${hasContent ? '<span class="card-toggle">▼</span>' : ''}
@@ -136,9 +140,17 @@
         
         card.addEventListener('click', (e) => {
           if (document.body.classList.contains('selection-mode')) {
-             card.classList.toggle('selected');
-             const cb = card.querySelector('.card-checkbox');
-             if (cb) cb.checked = card.classList.contains('selected');
+             if (selectedIds.has(gioco.id)) {
+                 selectedIds.delete(gioco.id);
+                 card.classList.remove('selected');
+                 const cb = card.querySelector('.card-checkbox');
+                 if (cb) cb.checked = false;
+             } else {
+                 selectedIds.add(gioco.id);
+                 card.classList.add('selected');
+                 const cb = card.querySelector('.card-checkbox');
+                 if (cb) cb.checked = true;
+             }
              updatePrintCount();
              return;
           }
@@ -185,22 +197,24 @@
     cancelMultiPrint.addEventListener('click', () => {
       document.body.classList.remove('selection-mode');
       multiPrintAction.style.display = 'none';
-      document.querySelectorAll('.card.selected').forEach(c => {
-        c.classList.remove('selected');
-        c.querySelector('.card-checkbox').checked = false;
-      });
+      selectedIds.clear();
+      renderResults(searchInput.value);
     });
 
     doMultiPrint.addEventListener('click', () => {
-      if (document.querySelectorAll('.card.selected').length === 0) return;
+      if (selectedIds.size === 0) return;
+      if (searchInput.value !== '') {
+          searchInput.value = '';
+          sessionStorage.setItem('search_giochi', '');
+          renderResults('');
+      }
       document.body.classList.add('printing-multiple');
       window.print();
       setTimeout(() => document.body.classList.remove('printing-multiple'), 500);
     });
 
     function updatePrintCount() {
-      const count = document.querySelectorAll('.card.selected').length;
-      printCount.textContent = count + ' selezionati';
+      printCount.textContent = selectedIds.size + ' selezionati';
     }
 
     async function init() {
