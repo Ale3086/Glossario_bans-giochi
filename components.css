@@ -384,6 +384,8 @@ body.selection-mode .card.selected {
     line-height: 1.3 !important;
   }
   
+  body.selection-mode .card-checkbox,
+  body.printing-multiple .card-checkbox,
   .card-toggle, .card-actions, .card-checkbox {
     display: none !important;
   }
