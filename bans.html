@@ -24,6 +24,8 @@
         <select id="sortSelect" class="form-control" style="width: auto; padding: 0 10px; font-size: var(--font-size-sm); border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-card-bg); color: var(--color-text);">
           <option value="az">A-Z</option>
           <option value="za">Z-A</option>
+          <option value="corti">Più corti</option>
+          <option value="lunghi">Più lunghi</option>
         </select>
         <button id="startMultiPrint" class="btn btn-secondary" style="padding:0 15px;" title="Stampa Multipla">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
@@ -83,6 +85,16 @@
       filtered.sort((a, b) => {
          if (sortVal === 'az') return a.nome.localeCompare(b.nome);
          if (sortVal === 'za') return b.nome.localeCompare(a.nome);
+         if (sortVal === 'corti') {
+           const lenA = (a.testo || '').length;
+           const lenB = (b.testo || '').length;
+           return lenA - lenB || a.nome.localeCompare(b.nome);
+         }
+         if (sortVal === 'lunghi') {
+           const lenA = (a.testo || '').length;
+           const lenB = (b.testo || '').length;
+           return lenB - lenA || a.nome.localeCompare(b.nome);
+         }
          return 0;
       });
       
