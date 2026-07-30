@@ -26,10 +26,6 @@
           <option value="za">Nome (Z-A)</option>
           <option value="corti">Testo più corto</option>
           <option value="lunghi">Testo più lungo</option>
-          <option value="con_video">Con Video Youtube</option>
-          <option value="senza_video">Senza Video</option>
-          <option value="con_note">Con Note/Gesti</option>
-          <option value="senza_note">Senza Note/Gesti</option>
         </select>
         <button id="startMultiPrint" class="btn btn-secondary" style="padding:0 15px;" title="Stampa Multipla">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
@@ -98,26 +94,6 @@
          if (sortVal === 'lunghi') {
            return (b.testo || '').length - (a.testo || '').length || nomeA.localeCompare(nomeB);
          }
-         if (sortVal === 'con_video') {
-           const vA = (a.link_video || '').trim().length > 0 ? 0 : 1;
-           const vB = (b.link_video || '').trim().length > 0 ? 0 : 1;
-           return vA - vB || nomeA.localeCompare(nomeB);
-         }
-         if (sortVal === 'senza_video') {
-           const vA = (a.link_video || '').trim().length > 0 ? 1 : 0;
-           const vB = (b.link_video || '').trim().length > 0 ? 1 : 0;
-           return vA - vB || nomeA.localeCompare(nomeB);
-         }
-         if (sortVal === 'con_note') {
-           const nA = (a.note_gesti || '').trim().length > 0 ? 0 : 1;
-           const nB = (b.note_gesti || '').trim().length > 0 ? 0 : 1;
-           return nA - nB || nomeA.localeCompare(nomeB);
-         }
-         if (sortVal === 'senza_note') {
-           const nA = (a.note_gesti || '').trim().length > 0 ? 1 : 0;
-           const nB = (b.note_gesti || '').trim().length > 0 ? 1 : 0;
-           return nA - nB || nomeA.localeCompare(nomeB);
-         }
          return 0;
       });
       
@@ -136,9 +112,8 @@
         
         const testo = (ban.testo || '').trim();
         const note = (ban.note_gesti || '').trim();
-        const link = (ban.link_video || '').trim();
 
-        const hasContent = testo !== '' || note !== '' || link !== '';
+        const hasContent = testo !== '' || note !== '';
 
         let bodyHtml = '';
         if (hasContent) {
@@ -146,7 +121,7 @@
           if (note) bodyHtml += `<p><strong>Note:</strong><br>${highlightMatch(note, query)}</p>`;
           
           let actionsHtml = '';
-          if (link) actionsHtml += `<a href="${link}" target="_blank" class="btn btn-secondary video-btn" onclick="event.stopPropagation()">Guarda Video</a>`;
+
           actionsHtml += `
             <button class="btn btn-outline print-btn" onclick="event.stopPropagation(); window.print()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
