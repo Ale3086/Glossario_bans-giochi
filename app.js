@@ -37,7 +37,6 @@ const installBtn = document.getElementById('installAppBtn');
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  if (installBtn) installBtn.style.display = 'inline-block';
   console.log("PWA install prompt ready.");
 });
 
